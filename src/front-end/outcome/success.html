@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirmation</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" href="./images/favicon.ico" type="image/ico" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  </head>
+
+  <body class="light">
+    <!-- Webhook Toasts -->
+    <div id="toast_bar"></div>
+
+    <div class="confirmation">
+      <div id="confirm-animation"></div>
+      <h3 id="message">Test payment approved!</h3>
+      <div class="ideal-confirmation text-appear">
+        <span>Paid with Alternative Payment Methods</span>
+        <!-- <img class="apmImg" alt="apm"
+                    src="images/card-icons/.png" /> -->
+        <button class="back text-appear">New Payment</button>
+      </div>
+    </div>
+
+    <p id="error"></p>
+    <script src="./outcome/script.js"></script>
+  </body>
+</html>

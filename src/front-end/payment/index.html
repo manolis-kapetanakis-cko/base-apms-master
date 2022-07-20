@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Payment Demo</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" href="./images/favicon.ico" type="image/ico" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  </head>
+
+  <body class="light">
+    <!-- Webhook Toasts -->
+    <div id="toast_bar"></div>
+
+    <!-- Loader -->
+    <div class="loader"></div>
+
+    <!-- Theme switcher -->
+    <div class="switch">
+      <input type="checkbox" id="theme-switch" />
+      <label class="switch" for="theme-switch"></label>
+    </div>
+
+    <!-- Payment Options -->
+    <div id="payment-options">
+      <div class="payment-option">
+        <input
+          type="radio"
+          id="cards"
+          name="payment"
+          value="cards"
+          onclick="paymentOption('cards')"
+          />
+        <label for="cards">Pay with <i>Credit/Debit Card</i></label>
+        <img src="images/card-icons/visa.svg" alt="visa" />
+        <img src="images/card-icons/mastercard.svg" alt="mastercard" />
+        <img
+          src="images/card-icons/american express.svg"
+          alt="carte-bancaire"
+          />
+      </div>
+      <div class="payment-option">
+        <input
+          type="radio"
+          id="ideal"
+          name="payment"
+          value="ideal"
+          onclick="paymentOption('ideal')"
+          />
+        <label for="ideal">Pay with <i>iDeal</i></label>
+        <img src="images/card-icons/ideal-logo.svg" alt="ideal" />
+      </div>
+      <div class="payment-option">
+        <input
+          type="radio"
+          id="klarna"
+          name="payment"
+          value="klarna"
+          onclick="paymentOption('klarna')"
+          />
+        <label for="klarna">Pay with <i>Klarna</i></label>
+        <img src="images/card-icons/klarna.svg" alt="klarna" />
+      </div>
+      <div class="payment-option">
+        <input
+          type="radio"
+          id="apms"
+          name="payment"
+          value="apms"
+          onclick="paymentOption('apms')"
+          />
+        <label for="apms">Pay with <i>other Alternative Payments</i></label>
+        <img src="images/card-icons/sofort.svg" alt="sofort" />
+        <img src="images/card-icons/p24.svg" alt="p24" />
+        <img src="images/card-icons/giropay.svg" alt="giropay" />
+        <img src="images/card-icons/paypal.svg" alt="paypal" />
+      </div>
+      <hr />
+    </div>
+
+    <div id="payment-form" style="display: none;">
+      <!-- Card Payments -->
+      <div id="cards-payment" class="hide">
+        <div id="inputs">
+          <!-- Cardholder Name -->
+          <div class="input-wrapper name">
+            <label id="name-label" for="name-input">Cardholder Name</label>
+            <input
+              type="text"
+              name="cc-name"
+              id="cardholder"
+              placeholder="John Smith"
+              autocomplete="cc-name"
+              />
+          </div>
+          <!-- Card Number -->
+          <div class="input-wrapper card-number">
+            <label id="card-label">Card Number</label>
+            <div class="card-and-scheme">
+              <div class="cko card-number-frame"></div>
+              <img id="card-scheme" />
+            </div>
+            <div class="hint card-hint hide">
+              <span class="line"></span>
+              4242 4242 4242 4242
+            </div>
+          </div>
+          <div class="date-and-cvv">
+            <!-- Expiry Date -->
+            <div class="input-wrapper expiry-date">
+              <label id="date-label">Expiry Date</label>
+              <div class="cko expiry-date-frame"></div>
+              <div class="hint expiry-date-hint hide">
+                Future Date<span class="line"></span>
+              </div>
+            </div>
+            <!-- Cvv -->
+            <div class="input-wrapper cvv">
+              <label id="cvv-label">CVV</label>
+              <div class="cko cvv-frame"></div>
+              <div class="hint cvv-hint hide">
+                <span class="line"></span>100
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-area">
+          <button class="pay" disabled>Pay Now</button>
+          <div class="loader pay-loader hide"></div>
+          <div id="outcome"></div>
+          <div class="error hide">
+            <span class="line"></span>
+            <div id="error-hint" class="hint"></div>
+          </div>
+        </div>
+      </div>
+      <!-- iDeal -->
+      <div id="ideal-payment" class="hide">
+        <!-- iDeal start -->
+        <div class="input-wrapper ideal">
+          <div id="ideal-selector"></div>
+          <div class="ideal-button">
+            <button id="ideal-pay" class="ideal-pay">Pay Now</button>
+          </div>
+        </div>
+      </div>
+      <!-- Klarna -->
+      <div id="klarna-payment" class="hide">
+        <div class="klarnaDiv">
+          <div id="klarna_container"></div>
+        </div>
+        <button class="klarna-btn" onclick="klarnaAuth()">Pay now</button>
+      </div>
+      <!-- APMs -->
+      <div id="apms-payment" class="hide apm-buttons">
+        <span>Click on the icon to pay with:</span>
+        <input
+          type="image"
+          class="apmImg"
+          alt="paySofort"
+          onclick="payAPM('sofort')"
+          src="images/card-icons/sofort.svg"
+          />
+        <input
+          type="image"
+          class="apmImg"
+          alt="payP24"
+          onclick="payAPM('p24')"
+          src="images/card-icons/p24.svg"
+          />
+        <input
+          type="image"
+          class="apmImg"
+          alt="giropay"
+          onclick="payAPM('giropay')"
+          src="images/card-icons/giropay.svg"
+          />
+        <input
+          type="image"
+          class="apmImg"
+          alt="paypal"
+          onclick="payAPM('paypal')"
+          src="images/card-icons/paypal.svg"
+          />
+      </div>
+    </div>
+
+    <!-- Checkout.com CDN -->
+    <script src="https://cdn.checkout.com/js/framesv2.min.js"></script>
+    <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+    <!-- Our scripts -->
+    <script src="./payment/script.js"></script>
+    <script src="./payment/frames.js"></script>
+    <script src="./payment/klarnaScript.js"></script>
+    <script src="./payment/idealScript.js"></script>
+  </body>
+</html>
